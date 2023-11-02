@@ -12,7 +12,8 @@ const config: Config = {
         'primary': '#667080',
         'secodary': '#E0E4EB',
         'btnPrimary': '#1F437A',
-        'borderPrimary': '#E8E7E7'
+        'borderPrimary': '#E8E7E7',
+        'borderSecondary': '#D0D5DD'
       }
     },
   },
