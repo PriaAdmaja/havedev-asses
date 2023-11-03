@@ -113,8 +113,8 @@ const Penjualan = () => {
         rowIndex={index}
         className="flex justify-between py-2 px-4 border-b border-b-solid border-b-borderPrimary"
       >
-        {({ registerChild, measure }) => (
-          <div ref={registerChild}>
+        {({ registerChild, measure } : CellMeasurerChildProps) => (
+          <div ref={(element) => registerChild && registerChild(element)}>
             <Collapsible
               onChange={measure}
               date={dayjs(showDataByDate[index].date).format("DD MMMM YYYY")}
@@ -194,6 +194,7 @@ const Penjualan = () => {
                 rowHeight={50}
                 rowCount={dataByDate.length}
                 width={width}
+                className="overflow-scroll"
               />
             )}
           </AutoSizer>
