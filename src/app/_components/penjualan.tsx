@@ -38,7 +38,6 @@ const Penjualan = () => {
     .map((data, date) => ({ data: data, date: date }))
     .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf())
     .value();
-  console.log(dataByDate);
 
   const showDataByDate = dataByDate
     .map((d) => ({
@@ -57,7 +56,7 @@ const Penjualan = () => {
 
   const cache = new CellMeasurerCache({
     fixedWidth: true,
-    defaultHeight: 100,
+    defaultHeight: 70,
   });
 
   const Collapsible = ({
@@ -136,11 +135,11 @@ const Penjualan = () => {
                       <Image
                         src={dropdownImg}
                         alt="dropdown"
-                        className={`hidden`}
+                        className={`opacity-0`}
                       />
                       <p className="text-left">{d.sale_code}</p>
                     </div>
-                    <p className="col-span-1">{d.customer.name}</p>
+                    <p className="col-span-1 px-4">{d.customer.name}</p>
                     <p className="col-span-2 text-right">
                       {Number(d.total).toLocaleString().replace(/,/g, ".")}
                     </p>
@@ -155,8 +154,8 @@ const Penjualan = () => {
   };
 
   return (
-    <main className="p-3 bg-[#eaeaea] h-screen">
-      <section className="p-4 bg-white rounded-lg h-full">
+    <main className="p-3 bg-[#eaeaea] h-screen ">
+      <section className="p-4 bg-white rounded-lg h-full overflow-y-hidden">
         <section className="flex justify-between items-center mb-2">
           <p className="font-medium text-base">Laporan Penjualan</p>
           <div className="flex justify-center items-end gap-2">
@@ -180,7 +179,7 @@ const Penjualan = () => {
             </button>
           </div>
         </section>
-        <table className="w-full">
+        <table className="w-full h-5/6">
           <thead className="bg-primary text-white ">
             <tr className="grid grid-cols-5">
               <td className="py-2 px-4 col-span-2 text-left">Nota Penjualan</td>
@@ -191,14 +190,15 @@ const Penjualan = () => {
             </tr>
           </thead>
           <AutoSizer>
-            {({ width }) => (
+            {({height, width }) => (
               <List
                 rowRenderer={rowRenderer}
-                height={500}
-                rowHeight={50}
+                deferredMeasurementCache={cache}
+                height={height}
+                rowHeight={cache.rowHeight}
                 rowCount={dataByDate.length}
                 width={width}
-                className="overflow-scroll"
+                
               />
             )}
           </AutoSizer>

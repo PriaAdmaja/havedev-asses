@@ -3,7 +3,7 @@ import Penjualan from "./_components/penjualan";
 
 export default function Home() {
   return (
-    <main >
+    <main className="overflow-hidden">
       <Header />
       <Penjualan />
     </main>
