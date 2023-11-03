@@ -79,7 +79,7 @@ const Penjualan = () => {
     return (
       <>
         <div
-          className="grid grid-cols-5 w-full py-2 px-4 cursor-pointer border-b border-b-solid border-b-borderPrimary"
+          className="grid grid-cols-5 w-full py-2 px-4 border-b border-b-solid border-b-borderPrimary"
           onClick={() => setExpanded(!expanded)}
         >
           <div className="flex justify-start items-center gap-2 col-span-1">
@@ -92,9 +92,11 @@ const Penjualan = () => {
             />
             <p className="text-left">{date}</p>
           </div>
-          <button type="button" className="col-span-1">
-            <Image src={exportClrImg} alt="export" />
-          </button>
+          <div className="col-span-1">
+            <button type="button" >
+              <Image src={exportClrImg} alt="export" />
+            </button>
+          </div>
           <p className="col-span-3 text-right">{total}</p>
         </div>
         {expanded && <>{children}</>}
@@ -112,12 +114,14 @@ const Penjualan = () => {
         rowIndex={index}
         className="flex justify-between py-2 px-4 border-b border-b-solid border-b-borderPrimary"
       >
-        {({ registerChild, measure } : CellMeasurerChildProps) => (
-          <div ref={(element) => {
-            if(element) {
-              registerChild && registerChild(element)
-            }
-          }}>
+        {({ registerChild, measure }: CellMeasurerChildProps) => (
+          <div
+            ref={(element) => {
+              if (element) {
+                registerChild && registerChild(element);
+              }
+            }}
+          >
             <Collapsible
               onChange={measure}
               date={dayjs(showDataByDate[index].date).format("DD MMMM YYYY")}
@@ -190,7 +194,7 @@ const Penjualan = () => {
             </tr>
           </thead>
           <AutoSizer>
-            {({height, width }) => (
+            {({ height, width }) => (
               <List
                 rowRenderer={rowRenderer}
                 deferredMeasurementCache={cache}
@@ -198,7 +202,6 @@ const Penjualan = () => {
                 rowHeight={cache.rowHeight}
                 rowCount={dataByDate.length}
                 width={width}
-                
               />
             )}
           </AutoSizer>
