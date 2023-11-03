@@ -114,7 +114,11 @@ const Penjualan = () => {
         className="flex justify-between py-2 px-4 border-b border-b-solid border-b-borderPrimary"
       >
         {({ registerChild, measure } : CellMeasurerChildProps) => (
-          <div ref={(element) => registerChild && registerChild(element)}>
+          <div ref={(element) => {
+            if(element) {
+              registerChild && registerChild(element)
+            }
+          }}>
             <Collapsible
               onChange={measure}
               date={dayjs(showDataByDate[index].date).format("DD MMMM YYYY")}
