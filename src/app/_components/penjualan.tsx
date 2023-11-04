@@ -1,7 +1,9 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import axios, { AxiosResponse } from "axios";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   List,
   ListRowProps,
@@ -24,6 +26,10 @@ import { CellMeasurerChildProps } from "react-virtualized/dist/es/CellMeasurer";
 
 const Penjualan = () => {
   const [data, setData] = useState<AxiosResponse | null>(null);
+  const [dateStart, setDateStart] = useState<Date | null>(null);
+  const [dateEnd, setDateEnd] = useState<Date | null>(null);
+  const [dateStartOpen, setDateStartOpen] = useState(false);
+  const [dateEndOpen, setDateEndOpen] = useState(false);
 
   useEffect(() => {
     const url: string = process.env["NEXT_PUBLIC_BE_API"] as string;
@@ -54,6 +60,19 @@ const Penjualan = () => {
     );
   }
 
+  interface CustomDateInputProps {
+    value: string;
+    onClick: () => void;
+  }
+
+  const CustomDateInput = forwardRef<HTMLButtonElement, CustomDateInputProps>(
+    ({ value, onClick }, ref) => (
+      <button onClick={onClick} ref={ref}>
+        {value}
+      </button>
+    )
+  );
+
   const cache = new CellMeasurerCache({
     fixedWidth: true,
     defaultHeight: 70,
@@ -78,22 +97,22 @@ const Penjualan = () => {
 
     return (
       <>
-        <div
-          className="grid grid-cols-5 w-full py-2 px-4 border-b border-b-solid border-b-borderPrimary"
-          onClick={() => setExpanded(!expanded)}
-        >
+        <div className="grid grid-cols-5 w-full py-2 px-4 border-b border-b-solid border-b-borderPrimary">
           <div className="flex justify-start items-center gap-2 col-span-1">
-            <Image
-              src={dropdownImg}
-              alt="dropdown"
-              className={`${
-                expanded ? "rotate-180" : ""
-              } transition ease-in-out duration-300`}
-            />
+            <button type="button" onClick={() => setExpanded(!expanded)}>
+              <Image
+                src={dropdownImg}
+                alt="dropdown"
+                className={`${
+                  expanded ? "rotate-180" : ""
+                } transition ease-in-out duration-300`}
+              />
+            </button>
+
             <p className="text-left">{date}</p>
           </div>
           <div className="col-span-1">
-            <button type="button" >
+            <button type="button">
               <Image src={exportClrImg} alt="export" />
             </button>
           </div>
@@ -166,11 +185,55 @@ const Penjualan = () => {
             <div>
               <p>Tanggal</p>
               <div className="flex justify-between items-center w-[280px] p-2 rounded border-solid border border-borderSecondary">
-                <p className="text-sm text-black font-medium">Tanggal Mulai</p>
+                <div className="relative">
+                  <button
+                    type="button"
+                    className="text-sm text-black font-medium"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDateStartOpen(!dateStartOpen);
+                    }}
+                  >
+                    {dateStart === null
+                      ? "Tanggal Mulai"
+                      : dayjs(dateStart).format("DD/MM/YYYY")}
+                  </button>
+                  <div className={`absolute z-50 ${dateStartOpen ? 'block' : 'hidden'}`}>
+                    <DatePicker
+                      selected={dateStart === null ? new Date() : dateStart}
+                      onChange={(e) => {
+                        setDateStart(e);
+                        setDateStartOpen(!dateStartOpen);
+                      }}
+                      inline
+                    />
+                  </div>
+                </div>
                 <Image src={arrowRight} alt="arrow" className="w-4" />
-                <p className="text-sm text-black font-medium">
-                  Tanggal Berakhir
-                </p>
+                <div className="relative">
+                  <button
+                    type="button"
+                    className="text-sm text-black font-medium"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDateEndOpen(!dateEndOpen);
+                    }}
+                  >
+                    {dateStart === null
+                      ? "Tanggal Berakhir"
+                      : dayjs(dateEnd).format("DD/MM/YYYY")}
+                  </button>
+                  <div className={`absolute z-50 ${dateEndOpen ? 'block' : 'hidden'} right-0`}>
+                    <DatePicker
+                      selected={dateEnd === null ? new Date() : dateEnd}
+                      onChange={(e) => {
+                        setDateEnd(e);
+                        setDateEndOpen(!dateEndOpen);
+                      }}
+                      inline
+                    />
+                  </div>
+                </div>
                 <Image src={dateImg} alt="date" className="w-3" />
               </div>
             </div>
