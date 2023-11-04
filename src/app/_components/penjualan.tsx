@@ -219,7 +219,7 @@ const Penjualan = () => {
                       setDateEndOpen(!dateEndOpen);
                     }}
                   >
-                    {dateStart === null
+                    {dateEnd === null
                       ? "Tanggal Berakhir"
                       : dayjs(dateEnd).format("DD/MM/YYYY")}
                   </button>
