@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios, { AxiosResponse } from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -39,18 +39,19 @@ const Penjualan = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  const dataByDate = _(data?.data)
+  let dataByDate = _(data?.data)
     .groupBy("date")
     .map((data, date) => ({ data: data, date: date }))
     .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf())
     .value();
 
-  const showDataByDate = dataByDate
-    .map((d) => ({
-      date: d.date,
-      total: d.data.map((datum) => datum.total).reduce((a, b) => a + b),
-    }))
-    .sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
+  console.log(dataByDate);
+  
+
+  const showDataByDate = dataByDate.map((d) => ({
+    date: d.date,
+    total: d.data.map((datum) => datum.total).reduce((a, b) => a + b),
+  }));
 
   if (data === null) {
     return (
@@ -59,19 +60,6 @@ const Penjualan = () => {
       </div>
     );
   }
-
-  interface CustomDateInputProps {
-    value: string;
-    onClick: () => void;
-  }
-
-  const CustomDateInput = forwardRef<HTMLButtonElement, CustomDateInputProps>(
-    ({ value, onClick }, ref) => (
-      <button onClick={onClick} ref={ref}>
-        {value}
-      </button>
-    )
-  );
 
   const cache = new CellMeasurerCache({
     fixedWidth: true,
@@ -98,8 +86,12 @@ const Penjualan = () => {
     return (
       <>
         <div className="grid grid-cols-5 w-full py-2 px-4 border-b border-b-solid border-b-borderPrimary">
-          <div className="flex justify-start items-center gap-2 col-span-1">
-            <button type="button" onClick={() => setExpanded(!expanded)}>
+          <div className="col-span-1">
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              className="flex justify-start items-center gap-2 "
+            >
               <Image
                 src={dropdownImg}
                 alt="dropdown"
@@ -107,9 +99,9 @@ const Penjualan = () => {
                   expanded ? "rotate-180" : ""
                 } transition ease-in-out duration-300`}
               />
-            </button>
 
-            <p className="text-left">{date}</p>
+              <p className="text-left">{date}</p>
+            </button>
           </div>
           <div className="col-span-1">
             <button type="button">
@@ -148,27 +140,32 @@ const Penjualan = () => {
                 .toLocaleString()
                 .replace(/,/g, ".")}
             >
-              {dataByDate[index].data.map((d, i) => {
-                return (
-                  <div
-                    key={i}
-                    className="grid grid-cols-5 py-2 px-4 border-b border-b-solid border-b-borderPrimary"
-                  >
-                    <div className="flex justify-start items-center gap-2 col-span-2">
-                      <Image
-                        src={dropdownImg}
-                        alt="dropdown"
-                        className={`opacity-0`}
-                      />
-                      <p className="text-left">{d.sale_code}</p>
+              {dataByDate[index].data
+                .sort(
+                  (a, b) =>
+                    Number(a.sale_code.slice(4)) - Number(b.sale_code.slice(4))
+                )
+                .map((d, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className="grid grid-cols-5 py-2 px-4 border-b border-b-solid border-b-borderPrimary"
+                    >
+                      <div className="flex justify-start items-center gap-2 col-span-2">
+                        <Image
+                          src={dropdownImg}
+                          alt="dropdown"
+                          className={`opacity-0`}
+                        />
+                        <p className="text-left">{d.sale_code}</p>
+                      </div>
+                      <p className="col-span-1 px-4">{d.customer.name}</p>
+                      <p className="col-span-2 text-right">
+                        {Number(d.total).toLocaleString().replace(/,/g, ".")}
+                      </p>
                     </div>
-                    <p className="col-span-1 px-4">{d.customer.name}</p>
-                    <p className="col-span-2 text-right">
-                      {Number(d.total).toLocaleString().replace(/,/g, ".")}
-                    </p>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </Collapsible>
           </div>
         )}
@@ -198,9 +195,14 @@ const Penjualan = () => {
                       ? "Tanggal Mulai"
                       : dayjs(dateStart).format("DD/MM/YYYY")}
                   </button>
-                  <div className={`absolute z-50 ${dateStartOpen ? 'block' : 'hidden'}`}>
+                  <div
+                    className={`absolute z-50 ${
+                      dateStartOpen ? "block" : "hidden"
+                    }`}
+                  >
                     <DatePicker
                       selected={dateStart === null ? new Date() : dateStart}
+                      dateFormat="yyyy/MM/dd"
                       onChange={(e) => {
                         setDateStart(e);
                         setDateStartOpen(!dateStartOpen);
@@ -223,7 +225,11 @@ const Penjualan = () => {
                       ? "Tanggal Berakhir"
                       : dayjs(dateEnd).format("DD/MM/YYYY")}
                   </button>
-                  <div className={`absolute z-50 ${dateEndOpen ? 'block' : 'hidden'} right-0`}>
+                  <div
+                    className={`absolute z-50 ${
+                      dateEndOpen ? "block" : "hidden"
+                    } right-0`}
+                  >
                     <DatePicker
                       selected={dateEnd === null ? new Date() : dateEnd}
                       onChange={(e) => {
